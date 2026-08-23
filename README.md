@@ -58,7 +58,7 @@ A modelagem foi construída considerando as regras de negócio de um ambiente de
 
 Luiz Oscar da Costa
 
-Curso Técnico em Informática para Internet
+Curso Técnico em IA
 
 Senac São Paulo
 
