@@ -11,7 +11,7 @@ Modelagem de dados criado no Logic model BRMW
 
 ## Sobre o Projeto
 
-Esta atividade foi desenvolvida durante a Unidade Curricular de Modelagem de Dados do curso Técnico em Informática para Internet do Senac São Paulo. O objetivo foi aplicar os conceitos de análise de requisitos, modelagem conceitual e modelagem lógica para projetar um banco de dados voltado a um sistema de comércio eletrônico (e-commerce).
+Esta atividade de Modelagem de Dados foi desenvolvida durante o curso Técnico em IA do Senac São Paulo. O objetivo foi aplicar os conceitos de análise de requisitos, modelagem conceitual e modelagem lógica para projetar um banco de dados voltado a um sistema de comércio eletrônico (e-commerce), Lojateck.
 
 A modelagem foi elaborada utilizando a ferramenta BRModelo Web, permitindo a representação estruturada das entidades, atributos e relacionamentos necessários para o funcionamento do sistema.
 
@@ -58,5 +58,61 @@ A modelagem foi construída considerando as regras de negócio de um ambiente de
 Luiz Oscar da Costa
 
 Curso Técnico em Informática para Internet
+
+Senac São Paulo
+
+
+
+# E-commerce Data Modeling
+
+## About the Project
+
+This Data Modeling activity was developed during the Artificial Intelligence Technical Course at Senac São Paulo. The objective was to apply the concepts of requirements analysis, conceptual modeling, and logical modeling to design a database for an e-commerce system called Lojateck.
+
+The model was created using the BRModelo Web tool, allowing a structured representation of the entities, attributes, and relationships required for the system's operation.
+
+## Modeling Objective
+
+The database was designed to support the main operations of an online sales platform, including the management of customers, products, categories, orders, payments, and other information related to the purchasing process.
+
+The proposed structure aims to ensure data integrity, reduce redundancy, and facilitate system maintenance and future evolution.
+
+## Applied Concepts
+
+The following concepts were applied during the development of this project:
+
+- Requirements gathering.
+- Relational database modeling.
+- Definition of entities and attributes.
+- Primary and foreign keys.
+- Relationships between tables.
+- Data normalization.
+- Referential integrity.
+
+## Logical Model
+
+The logical model presents the organization of database tables and the relationships between them, serving as the foundation for future implementation in a Database Management System (DBMS).
+
+The model was developed according to the business rules of an e-commerce environment, enabling the registration and monitoring of operations performed by platform users.
+
+## Benefits of the Proposed Structure
+
+- Efficient information organization.
+- Easier data querying and reporting.
+- Customer and product data management.
+- Order history tracking.
+- Improved data consistency and security.
+- Scalability for future features and enhancements.
+
+## Tools Used
+
+- BRModelo Web
+- Relational Logical Model
+
+## Author
+
+Luiz Oscar da Costa
+
+Artificial Intelligence Technical Course
 
 Senac São Paulo
