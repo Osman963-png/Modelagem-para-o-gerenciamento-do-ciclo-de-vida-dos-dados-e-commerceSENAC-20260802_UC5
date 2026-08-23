@@ -4,4 +4,4 @@ Modelagem de dados criado no Logic model BRMW
 2
  
 3
-🔗 [Abrir modelagem no BRModelo]([https://app.brmodeloweb.com/](https://app.brmodeloweb.com/publicview/6a6f964789c3a8fa282a2f06)
+🔗 [Abrir modelagem no BRModelo]([https://app.brmodeloweb.com/](https://app.brmodeloweb.com/publicview/6a8b2ea357fca559ea8680db)
