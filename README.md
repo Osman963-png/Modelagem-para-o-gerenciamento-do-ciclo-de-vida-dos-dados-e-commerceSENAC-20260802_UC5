@@ -127,8 +127,6 @@ Senac São Paulo
 CREATE DATABASE teste;
 USE teste;
 
-CREATE DATABASE teste;
-USE teste;
 CREATE TABLE categoria (
     categoria_id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
