@@ -51,8 +51,7 @@ A modelagem foi construída considerando as regras de negócio de um ambiente de
 
 ## Ferramenta Utilizada
 
-- BRModelo Web
-- Modelo Lógico Relacional
+- BRModelo Web ( Modelo Lógico Relacional)
 
 ## Autor
 
