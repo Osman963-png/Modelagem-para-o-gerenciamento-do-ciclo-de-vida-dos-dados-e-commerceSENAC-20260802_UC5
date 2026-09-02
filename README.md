@@ -126,72 +126,97 @@ Senac São Paulo
 CREATE DATABASE teste;
 USE teste;
 
+CREATE DATABASE teste;
+USE teste;
+
+-- =========================
+-- CATEGORIAS
+-- =========================
 CREATE TABLE categoria (
     categoria_id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100),
-    slug VARCHAR(100),
-    categoria_pai_id INT,
-    ativo BOOLEAN
+    nome VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    categoria_pai_id INT NULL,
+    ativo BOOLEAN DEFAULT TRUE,
+
+    CONSTRAINT fk_categoria_pai
+        FOREIGN KEY (categoria_pai_id)
+        REFERENCES categoria(categoria_id)
 );
 
+-- =========================
+-- MARCAS
+-- =========================
 CREATE TABLE marcas (
-    marca_id INT PRIMARY KEY,
-    nome VARCHAR(100),
+    marca_id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
     site VARCHAR(255),
-    ativo BOOLEAN
+    ativo BOOLEAN DEFAULT TRUE
 );
 
-
+-- =========================
+-- FORNECEDORES
+-- =========================
 CREATE TABLE fornecedores (
     fornecedor_id INT AUTO_INCREMENT PRIMARY KEY,
-    razao_social VARCHAR(150),
+    razao_social VARCHAR(150) NOT NULL,
     nome_fantasia VARCHAR(150),
-    cnpj VARCHAR(18),
+    cnpj VARCHAR(18) UNIQUE,
     email VARCHAR(150),
     telefone VARCHAR(20),
     prazo_medio_dias INT,
-    ativo BOOLEAN
+    ativo BOOLEAN DEFAULT TRUE
 );
 
-USE teste;
-
+-- =========================
+-- CENTROS DE DISTRIBUIÇÃO
+-- =========================
 CREATE TABLE centro_distribuicao (
     centro_distribuicao_id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) DEFAULT 'nome',
+    nome VARCHAR(100) NOT NULL,
     cidade VARCHAR(100),
     uf CHAR(2),
-    ativo BOOLEAN
+    ativo BOOLEAN DEFAULT TRUE
 );
 
+-- =========================
+-- CLIENTES
+-- =========================
 CREATE TABLE clientes (
     cliente_id INT AUTO_INCREMENT PRIMARY KEY,
-    nome_completo VARCHAR(150),
-    email VARCHAR(150),
-    cpf VARCHAR(14),
+    nome_completo VARCHAR(150) NOT NULL,
+    email VARCHAR(150) UNIQUE,
+    cpf VARCHAR(14) UNIQUE,
     telefone VARCHAR(20),
     data_nascimento DATE,
-    criado_em DATE,
-    ativo BOOLEAN
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ativo BOOLEAN DEFAULT TRUE
 );
 
+-- =========================
+-- CUPONS
+-- =========================
 CREATE TABLE cupons (
     cupom_id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(50),
+    codigo VARCHAR(50) NOT NULL UNIQUE,
     tipo_desconto VARCHAR(20),
     valor_desconto DECIMAL(10,2),
     valor_minimo DECIMAL(10,2),
     inicio_em DATE,
     fim_em DATE,
     limite_usos INT,
-    usos_realizados INT,
-    ativo BOOLEAN
+    usos_realizados INT DEFAULT 0,
+    ativo BOOLEAN DEFAULT TRUE
 );
 
+-- =========================
+-- PRODUTOS
+-- =========================
 CREATE TABLE produtos (
     produto_id INT AUTO_INCREMENT PRIMARY KEY,
-    sku VARCHAR(50),
-    nome VARCHAR(150),
-    slug VARCHAR(150),
+    sku VARCHAR(50) UNIQUE,
+    nome VARCHAR(150) NOT NULL,
+    slug VARCHAR(150) UNIQUE,
     categoria_id INT,
     marca_id INT,
     fornecedor_id INT,
@@ -199,15 +224,27 @@ CREATE TABLE produtos (
     preco_venda DECIMAL(10,2),
     peso_kg DECIMAL(8,3),
     garantia_meses INT,
-    ativo BOOLEAN,
-    
-    FOREIGN KEY (categoria_id) REFERENCES categoria(categoria_id),
-    FOREIGN KEY (marca_id) REFERENCES marcas(marca_id),
-    FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(fornecedor_id)
+    ativo BOOLEAN DEFAULT TRUE,
+
+    CONSTRAINT fk_produto_categoria
+        FOREIGN KEY (categoria_id)
+        REFERENCES categoria(categoria_id),
+
+    CONSTRAINT fk_produto_marca
+        FOREIGN KEY (marca_id)
+        REFERENCES marcas(marca_id),
+
+    CONSTRAINT fk_produto_fornecedor
+        FOREIGN KEY (fornecedor_id)
+        REFERENCES fornecedores(fornecedor_id)
 );
+
+-- =========================
+-- ENDEREÇOS
+-- =========================
 CREATE TABLE enderecos (
     endereco_id INT AUTO_INCREMENT PRIMARY KEY,
-    cliente_id INT,
+    cliente_id INT NOT NULL,
     tipo VARCHAR(20),
     logradouro VARCHAR(150),
     numero VARCHAR(20),
@@ -216,213 +253,274 @@ CREATE TABLE enderecos (
     cidade VARCHAR(100),
     uf CHAR(2),
     cep VARCHAR(9),
-    principal BOOLEAN,
+    principal BOOLEAN DEFAULT FALSE,
 
-    FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id)
+    CONSTRAINT fk_endereco_cliente
+        FOREIGN KEY (cliente_id)
+        REFERENCES clientes(cliente_id)
 );
 
+-- =========================
+-- ESTOQUE
+-- =========================
 CREATE TABLE estoques (
     estoque_id INT AUTO_INCREMENT PRIMARY KEY,
-    produto_id INT,
-    centro_id INT,
-    quantidade INT,
-    reservado INT,
+    produto_id INT NOT NULL,
+    centro_id INT NOT NULL,
+    quantidade INT DEFAULT 0,
+    reservado INT DEFAULT 0,
     ponto_reposicao INT,
-    atualizado_em DATETIME,
+    atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (produto_id) REFERENCES produtos(produto_id),
-    FOREIGN KEY (centro_id) REFERENCES centro_distribuicao(centro_distribuicao_id)
+    CONSTRAINT fk_estoque_produto
+        FOREIGN KEY (produto_id)
+        REFERENCES produtos(produto_id),
+
+    CONSTRAINT fk_estoque_centro
+        FOREIGN KEY (centro_id)
+        REFERENCES centro_distribuicao(centro_distribuicao_id)
 );
 
-
+-- =========================
+-- MOVIMENTAÇÃO DE ESTOQUE
+-- =========================
 CREATE TABLE movimentacao_estoque (
     movimentacao_estoque_id INT AUTO_INCREMENT PRIMARY KEY,
-    produto_id INT,
-    centro_id INT,
+    produto_id INT NOT NULL,
+    centro_id INT NOT NULL,
     tipo VARCHAR(20),
     quantidade INT,
     referencia VARCHAR(100),
-    criado_em DATETIME,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (produto_id) REFERENCES produtos(produto_id),
-    FOREIGN KEY (centro_id) REFERENCES centro_distribuicao(centro_distribuicao_id)
+    CONSTRAINT fk_mov_produto
+        FOREIGN KEY (produto_id)
+        REFERENCES produtos(produto_id),
+
+    CONSTRAINT fk_mov_centro
+        FOREIGN KEY (centro_id)
+        REFERENCES centro_distribuicao(centro_distribuicao_id)
 );
 
+-- =========================
+-- PEDIDOS
+-- =========================
 CREATE TABLE pedidos (
     pedido_id INT AUTO_INCREMENT PRIMARY KEY,
-    cliente_id INT,
-    endereco_entrega_id INT,
+    cliente_id INT NOT NULL,
+    endereco_entrega_id INT NOT NULL,
+
     status VARCHAR(30),
+
     subtotal DECIMAL(10,2),
     valor_desconto DECIMAL(10,2),
     valor_frete DECIMAL(10,2),
     valor_total DECIMAL(10,2),
-    criado_em DATETIME,
-    atualizado_em DATETIME,
 
-    FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id),
-    FOREIGN KEY (endereco_entrega_id) REFERENCES enderecos(endereco_id)
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_pedido_cliente
+        FOREIGN KEY (cliente_id)
+        REFERENCES clientes(cliente_id),
+
+    CONSTRAINT fk_pedido_endereco
+        FOREIGN KEY (endereco_entrega_id)
+        REFERENCES enderecos(endereco_id)
 );
 
+-- =========================
+-- ITENS DO PEDIDO
+-- =========================
 CREATE TABLE itens_pedidos (
     item_pedidos_id INT AUTO_INCREMENT PRIMARY KEY,
-    pedido_id INT,
-    produto_id INT,
-    centro_id INT,
-    quantidade INT,
+
+    pedido_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    centro_id INT NOT NULL,
+
+    quantidade INT NOT NULL,
+
     preco_unitario DECIMAL(10,2),
     percentual_desconto DECIMAL(5,2),
     subtotal DECIMAL(10,2),
 
-    FOREIGN KEY (pedido_id) REFERENCES pedidos(pedido_id),
-    FOREIGN KEY (produto_id) REFERENCES produtos(produto_id),
-    FOREIGN KEY (centro_id) REFERENCES centro_distribuicao(centro_distribuicao_id)
+    CONSTRAINT fk_item_pedido
+        FOREIGN KEY (pedido_id)
+        REFERENCES pedidos(pedido_id),
+
+    CONSTRAINT fk_item_produto
+        FOREIGN KEY (produto_id)
+        REFERENCES produtos(produto_id),
+
+    CONSTRAINT fk_item_centro
+        FOREIGN KEY (centro_id)
+        REFERENCES centro_distribuicao(centro_distribuicao_id)
 );
 
+-- =========================
+-- PEDIDO x CUPOM
+-- =========================
 CREATE TABLE pedidos_cupons (
     pedido_cupons_id INT AUTO_INCREMENT PRIMARY KEY,
-    pedido_id INT,
-    cupom_id INT,
+
+    pedido_id INT NOT NULL,
+    cupom_id INT NOT NULL,
+
     valor_aplicado DECIMAL(10,2),
 
-    FOREIGN KEY (pedido_id) REFERENCES pedidos(pedido_id),
-    FOREIGN KEY (cupom_id) REFERENCES cupons(cupom_id)
+    CONSTRAINT fk_pc_pedido
+        FOREIGN KEY (pedido_id)
+        REFERENCES pedidos(pedido_id),
+
+    CONSTRAINT fk_pc_cupom
+        FOREIGN KEY (cupom_id)
+        REFERENCES cupons(cupom_id)
 );
 
+-- =========================
+-- PAGAMENTOS
+-- =========================
 CREATE TABLE pagamentos (
     pagamento_id INT AUTO_INCREMENT PRIMARY KEY,
-    pedido_id INT,
+
+    pedido_id INT NOT NULL,
+
     metodo VARCHAR(30),
     parcelas INT,
     valor DECIMAL(10,2),
+
     status VARCHAR(20),
     codigo_transacao VARCHAR(100),
+
     processado_em DATETIME,
 
-    FOREIGN KEY (pedido_id) REFERENCES pedidos(pedido_id)
+    CONSTRAINT fk_pagamento_pedido
+        FOREIGN KEY (pedido_id)
+        REFERENCES pedidos(pedido_id)
 );
 
+-- =========================
+-- ENTREGAS
+-- =========================
 CREATE TABLE entregas (
     entrega_id INT AUTO_INCREMENT PRIMARY KEY,
-    pedido_id INT,
+
+    pedido_id INT NOT NULL,
+
     transportadora VARCHAR(100),
     codigo_rastreio VARCHAR(100),
+
     status VARCHAR(30),
+
     previsao_entrega DATETIME,
     enviado_em DATETIME,
     entregue_em DATETIME,
 
-    FOREIGN KEY (pedido_id) REFERENCES pedidos(pedido_id)
+    CONSTRAINT fk_entrega_pedido
+        FOREIGN KEY (pedido_id)
+        REFERENCES pedidos(pedido_id)
 );
 
+-- =========================
+-- HISTÓRICO DE STATUS
+-- =========================
 CREATE TABLE historico_status_pedido (
     historico_status_pedido_id INT AUTO_INCREMENT PRIMARY KEY,
-    pedido_id INT,
+
+    pedido_id INT NOT NULL,
+
     status_anterior VARCHAR(30),
     status_novo VARCHAR(30),
     observacao VARCHAR(255),
-    alterado_em DATETIME,
 
-    FOREIGN KEY (pedido_id) REFERENCES pedidos(pedido_id)
+    alterado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_historico_pedido
+        FOREIGN KEY (pedido_id)
+        REFERENCES pedidos(pedido_id)
 );
 
+-- =========================
+-- AVALIAÇÕES
+-- =========================
 CREATE TABLE avaliacoes (
     avaliacao_id INT AUTO_INCREMENT PRIMARY KEY,
-    cliente_id INT,
-    produto_id INT,
-    pedido_id INT,
-    nota INT,
+
+    cliente_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    pedido_id INT NOT NULL,
+
+    nota INT CHECK (nota BETWEEN 1 AND 5),
+
     titulo VARCHAR(100),
     comentario VARCHAR(500),
-    criado_em DATETIME,
-    aprovado BOOLEAN,
 
-    FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id),
-    FOREIGN KEY (produto_id) REFERENCES produtos(produto_id),
-    FOREIGN KEY (pedido_id) REFERENCES pedidos(pedido_id)
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    aprovado BOOLEAN DEFAULT FALSE,
+
+    CONSTRAINT fk_av_cliente
+        FOREIGN KEY (cliente_id)
+        REFERENCES clientes(cliente_id),
+
+    CONSTRAINT fk_av_produto
+        FOREIGN KEY (produto_id)
+        REFERENCES produtos(produto_id),
+
+    CONSTRAINT fk_av_pedido
+        FOREIGN KEY (pedido_id)
+        REFERENCES pedidos(pedido_id),
+
+    CONSTRAINT uk_avaliacao
+        UNIQUE(cliente_id, produto_id, pedido_id)
 );
 
+-- =========================
+-- ÍNDICES PARA JOIN
+-- =========================
 
-ALTER TABLE categoria
-ADD FOREIGN KEY (categoria_pai_id)
-REFERENCES categoria(categoria_id);
+CREATE INDEX idx_produtos_categoria
+ON produtos(categoria_id);
 
-ALTER TABLE produtos
-ADD FOREIGN KEY (categoria_id)
-REFERENCES categoria(categoria_id);
+CREATE INDEX idx_produtos_marca
+ON produtos(marca_id);
 
-ALTER TABLE produtos
-ADD FOREIGN KEY (marca_id)
-REFERENCES marcas(marca_id);
+CREATE INDEX idx_produtos_fornecedor
+ON produtos(fornecedor_id);
 
-ALTER TABLE produtos
-ADD FOREIGN KEY (fornecedor_id)
-REFERENCES fornecedores(fornecedor_id);
+CREATE INDEX idx_enderecos_cliente
+ON enderecos(cliente_id);
 
-ALTER TABLE enderecos
-ADD FOREIGN KEY (cliente_id)
-REFERENCES clientes(cliente_id);
+CREATE INDEX idx_pedidos_cliente
+ON pedidos(cliente_id);
 
-ALTER TABLE estoques
-ADD FOREIGN KEY (produto_id)
-REFERENCES produtos(produto_id);
+CREATE INDEX idx_pedidos_endereco
+ON pedidos(endereco_entrega_id);
 
-ALTER TABLE estoques
-ADD FOREIGN KEY (centro_id)
-REFERENCES centro_distribuicao(centro_distribuicao_id);
+CREATE INDEX idx_itens_pedido
+ON itens_pedidos(pedido_id);
 
-ALTER TABLE movimentacao_estoque
-ADD FOREIGN KEY (produto_id)
-REFERENCES produtos(produto_id);
+CREATE INDEX idx_itens_produto
+ON itens_pedidos(produto_id);
 
-ALTER TABLE movimentacao_estoque
-ADD FOREIGN KEY (centro_id)
-REFERENCES centro_distribuicao(centro_distribuicao_id);
+CREATE INDEX idx_itens_centro
+ON itens_pedidos(centro_id);
 
-ALTER TABLE pedidos
-ADD FOREIGN KEY (cliente_id)
-REFERENCES clientes(cliente_id);
+CREATE INDEX idx_estoque_produto
+ON estoques(produto_id);
 
-ALTER TABLE pedidos
-ADD FOREIGN KEY (endereco_entrega_id)
-REFERENCES enderecos(endereco_id);
+CREATE INDEX idx_estoque_centro
+ON estoques(centro_id);
 
-ALTER TABLE itens_pedidos
-ADD FOREIGN KEY (pedido_id)
-REFERENCES pedidos(pedido_id);
+CREATE INDEX idx_pagamentos_pedido
+ON pagamentos(pedido_id);
 
-ALTER TABLE itens_pedidos
-ADD FOREIGN KEY (produto_id)
-REFERENCES produtos(produto_id);
+CREATE INDEX idx_entregas_pedido
+ON entregas(pedido_id);
 
-ALTER TABLE itens_pedidos
-ADD FOREIGN KEY (centro_id)
-REFERENCES centro_distribuicao(centro_distribuicao_id);
+CREATE INDEX idx_avaliacoes_produto
+ON avaliacoes(produto_id);
 
-ALTER TABLE pedidos_cupons
-ADD FOREIGN KEY (cupom_id)
-REFERENCES cupons(cupom_id);
-
-ALTER TABLE pagamentos
-ADD FOREIGN KEY (pedido_id)
-REFERENCES pedidos(pedido_id);
-
-ALTER TABLE entregas
-ADD FOREIGN KEY (pedido_id)
-REFERENCES pedidos(pedido_id);
-
-ALTER TABLE historico_status_pedido
-ADD FOREIGN KEY (pedido_id)
-REFERENCES pedidos(pedido_id);
-
-ALTER TABLE avaliacoes
-ADD FOREIGN KEY (cliente_id)
-REFERENCES clientes(cliente_id);
-
-ALTER TABLE avaliacoes
-ADD FOREIGN KEY (produto_id)
-REFERENCES produtos(produto_id);
-
-ALTER TABLE avaliacoes
-ADD FOREIGN KEY (pedido_id)
-REFERENCES pedidos(pedido_id);
+CREATE INDEX idx_avaliacoes_cliente
+ON avaliacoes(cliente_id);
