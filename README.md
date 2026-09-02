@@ -123,8 +123,7 @@ Senac São Paulo
 
 1. Criar o banco:
 ```sql
-CREATE DATABASE teste;
-USE teste;
+####################################
 
 CREATE DATABASE teste;
 USE teste;
